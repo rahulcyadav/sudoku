@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Sudoku</title>
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<script src="js/jquery-2.2.0.min.js"></script>
+		<script src="js/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="js/master.js"></script>
+	</head>
+	<body>
+		<header>
+			<h2>Sudoku</h2>
+		</header>
+		<nav>
+
+		</nav>
+		<!-- <section id="gametype">
+			<input type="button" value="1 Player" onclick="oneplayer()" />
+			<input type="button" value="2 Player" onclick="twoplayer()" />
+		</section>
+		
+		<section id="info">
+			<p></p>
+		</section>
+		
+		<section id="turn">
+		</section>	 -->
+		
+		<div class="container">
+
+			<section id="input">
+					<table>
+						<tr>
+							<td class="inputbutton">1</td>
+							<td class="inputbutton">2</td>
+							<td class="inputbutton">3</td>
+							<td class="inputbutton">4</td>
+							<td class="inputbutton">5</td>
+							<td class="inputbutton">6</td>
+							<td class="inputbutton">7</td>
+							<td class="inputbutton">8</td>
+							<td class="inputbutton">9</td>
+							<td class="inputbutton">clear</td>
+							
+						</tr>
+					</table>
+			</section>
+			<section id="board">
+				<table>
+					<tr>
+						<td class="playarea row1 col1 topleft"></td>
+						<td class="playarea row1 col2 topleft"></td>
+						<td class="playarea row1 col3 topleft"></td>
+						<td class="playarea row1 col4 top"></td>
+						<td class="playarea row1 col5 top"></td>
+						<td class="playarea row1 col6 top"></td>
+						<td class="playarea row1 col7 topright"></td>
+						<td class="playarea row1 col8 topright"></td>
+						<td class="playarea row1 col9 topright"></td>
+					</tr>
+					<tr>
+						<td class="playarea row2 col1 topleft"></td>
+						<td class="playarea row2 col2 topleft"></td>
+						<td class="playarea row2 col3 topleft"></td>
+						<td class="playarea row2 col4 top"></td>
+						<td class="playarea row2 col5 top"></td>
+						<td class="playarea row2 col6 top"></td>
+						<td class="playarea row2 col7 topright"></td>
+						<td class="playarea row2 col8 topright"></td>
+						<td class="playarea row2 col9 topright"></td>
+					</tr>
+					<tr>
+						<td class="playarea row3 col1 topleft"></td>
+						<td class="playarea row3 col2 topleft"></td>
+						<td class="playarea row3 col3 topleft"></td>
+						<td class="playarea row3 col4 top"></td>
+						<td class="playarea row3 col5 top"></td>
+						<td class="playarea row3 col6 top"></td>
+						<td class="playarea row3 col7 topright"></td>
+						<td class="playarea row3 col8 topright"></td>
+						<td class="playarea row3 col9 topright"></td>
+					</tr>
+					<tr>
+						<td class="playarea row4 col1 left"></td>
+						<td class="playarea row4 col2 left"></td>
+						<td class="playarea row4 col3 left"></td>
+						<td class="playarea row4 col4 centre"></td>
+						<td class="playarea row4 col5 centre"></td>
+						<td class="playarea row4 col6 centre"></td>
+						<td class="playarea row4 col7 right"></td>
+						<td class="playarea row4 col8 right"></td>
+						<td class="playarea row4 col9 right"></td>
+					</tr>
+					<tr>
+						<td class="playarea row5 col1 left"></td>
+						<td class="playarea row5 col2 left"></td>
+						<td class="playarea row5 col3 left"></td>
+						<td class="playarea row5 col4 centre"></td>
+						<td class="playarea row5 col5 centre"></td>
+						<td class="playarea row5 col6 centre"></td>
+						<td class="playarea row5 col7 right"></td>
+						<td class="playarea row5 col8 right"></td>
+						<td class="playarea row5 col9 right"></td>
+					</tr>
+					<tr>
+						<td class="playarea row6 col1 left"></td>
+						<td class="playarea row6 col2 left"></td>
+						<td class="playarea row6 col3 left"></td>
+						<td class="playarea row6 col4 centre"></td>
+						<td class="playarea row6 col5 centre"></td>
+						<td class="playarea row6 col6 centre"></td>
+						<td class="playarea row6 col7 right"></td>
+						<td class="playarea row6 col8 right"></td>
+						<td class="playarea row6 col9 right"></td>
+					</tr>
+					<tr>
+						<td class="playarea row7 col1 bottomleft"></td>
+						<td class="playarea row7 col2 bottomleft"></td>
+						<td class="playarea row7 col3 bottomleft"></td>
+						<td class="playarea row7 col4 bottom"></td>
+						<td class="playarea row7 col5 bottom"></td>
+						<td class="playarea row7 col6 bottom"></td>
+						<td class="playarea row7 col7 bottomright"></td>
+						<td class="playarea row7 col8 bottomright"></td>
+						<td class="playarea row7 col9 bottomright"></td>
+					</tr>
+					<tr>
+						<td class="playarea row8 col1 bottomleft"></td>
+						<td class="playarea row8 col2 bottomleft"></td>
+						<td class="playarea row8 col3 bottomleft"></td>
+						<td class="playarea row8 col4 bottom"></td>
+						<td class="playarea row8 col5 bottom"></td>
+						<td class="playarea row8 col6 bottom"></td>
+						<td class="playarea row8 col7 bottomright"></td>
+						<td class="playarea row8 col8 bottomright"></td>
+						<td class="playarea row8 col9 bottomright"></td>
+					</tr>
+					<tr>
+						<td class="playarea row9 col1 bottomleft"></td>
+						<td class="playarea row9 col2 bottomleft"></td>
+						<td class="playarea row9 col3 bottomleft"></td>
+						<td class="playarea row9 col4 bottom"></td>
+						<td class="playarea row9 col5 bottom"></td>
+						<td class="playarea row9 col6 bottom"></td>
+						<td class="playarea row9 col7 bottomright"></td>
+						<td class="playarea row9 col8 bottomright"></td>
+						<td class="playarea row9 col9 bottomright"></td>
+					</tr>
+				</table>
+				<!-- <table>
+					<tbody><tr>
+						<td class="playarea row1 col1 topleft" id=""></td>
+						<td class="playarea row1 col2 topleft"></td>
+						<td class="playarea row1 col3 topleft " id="">3</td>
+						<td class="playarea row1 col4 top " id="">9</td>
+						<td class="playarea row1 col5 top"></td>
+						<td class="playarea row1 col6 top"></td>
+						<td class="playarea row1 col7 topright" id=""></td>
+						<td class="playarea row1 col8 topright " id="">5</td>
+						<td class="playarea row1 col9 topright " id="">1</td>
+					</tr>
+					<tr>
+						<td class="playarea row2 col1 topleft " id="">5</td>
+						<td class="playarea row2 col2 topleft " id="">4</td>
+						<td class="playarea row2 col3 topleft " id="">6</td>
+						<td class="playarea row2 col4 top"></td>
+						<td class="playarea row2 col5 top " id="">1</td>
+						<td class="playarea row2 col6 top " id="">8</td>
+						<td class="playarea row2 col7 topright " id="">3</td>
+						<td class="playarea row2 col8 topright" id=""></td>
+						<td class="playarea row2 col9 topright" id="selected"></td>
+					</tr>
+					<tr>
+						<td class="playarea row3 col1 topleft"></td>
+						<td class="playarea row3 col2 topleft"></td>
+						<td class="playarea row3 col3 topleft"></td>
+						<td class="playarea row3 col4 top"></td>
+						<td class="playarea row3 col5 top"></td>
+						<td class="playarea row3 col6 top " id="">7</td>
+						<td class="playarea row3 col7 topright " id="">4</td>
+						<td class="playarea row3 col8 topright " id="">2</td>
+						<td class="playarea row3 col9 topright"></td>
+					</tr>
+					<tr>
+						<td class="playarea row4 col1 left"></td>
+						<td class="playarea row4 col2 left"></td>
+						<td class="playarea row4 col3 left " id="">9</td>
+						<td class="playarea row4 col4 centre"></td>
+						<td class="playarea row4 col5 centre " id="">5</td>
+						<td class="playarea row4 col6 centre"></td>
+						<td class="playarea row4 col7 right"></td>
+						<td class="playarea row4 col8 right " id="">3</td>
+						<td class="playarea row4 col9 right"></td>
+					</tr>
+					<tr>
+						<td class="playarea row5 col1 left " id="">2</td>
+						<td class="playarea row5 col2 left"></td>
+						<td class="playarea row5 col3 left"></td>
+						<td class="playarea row5 col4 centre " id="">6</td>
+						<td class="playarea row5 col5 centre"></td>
+						<td class="playarea row5 col6 centre " id="">3</td>
+						<td class="playarea row5 col7 right"></td>
+						<td class="playarea row5 col8 right"></td>
+						<td class="playarea row5 col9 right " id="">4</td>
+					</tr>
+					<tr>
+						<td class="playarea row6 col1 left"></td>
+						<td class="playarea row6 col2 left " id="">8</td>
+						<td class="playarea row6 col3 left"></td>
+						<td class="playarea row6 col4 centre"></td>
+						<td class="playarea row6 col5 centre " id="">7</td>
+						<td class="playarea row6 col6 centre"></td>
+						<td class="playarea row6 col7 right " id="">2</td>
+						<td class="playarea row6 col8 right"></td>
+						<td class="playarea row6 col9 right"></td>
+					</tr>
+					<tr>
+						<td class="playarea row7 col1 bottomleft"></td>
+						<td class="playarea row7 col2 bottomleft " id="">9</td>
+						<td class="playarea row7 col3 bottomleft " id="">7</td>
+						<td class="playarea row7 col4 bottom " id="">3</td>
+						<td class="playarea row7 col5 bottom"></td>
+						<td class="playarea row7 col6 bottom"></td>
+						<td class="playarea row7 col7 bottomright"></td>
+						<td class="playarea row7 col8 bottomright"></td>
+						<td class="playarea row7 col9 bottomright"></td>
+					</tr>
+					<tr>
+						<td class="playarea row8 col1 bottomleft"></td>
+						<td class="playarea row8 col2 bottomleft"></td>
+						<td class="playarea row8 col3 bottomleft " id="">1</td>
+						<td class="playarea row8 col4 bottom " id="">8</td>
+						<td class="playarea row8 col5 bottom " id="">2</td>
+						<td class="playarea row8 col6 bottom"></td>
+						<td class="playarea row8 col7 bottomright " id="">9</td>
+						<td class="playarea row8 col8 bottomright " id="">4</td>
+						<td class="playarea row8 col9 bottomright " id="">7</td>
+					</tr>
+					<tr>
+						<td class="playarea row9 col1 bottomleft " id="">8</td>
+						<td class="playarea row9 col2 bottomleft " id="">5</td>
+						<td class="playarea row9 col3 bottomleft"></td>
+						<td class="playarea row9 col4 bottom"></td>
+						<td class="playarea row9 col5 bottom"></td>
+						<td class="playarea row9 col6 bottom " id="">4</td>
+						<td class="playarea row9 col7 bottomright " id="">6</td>
+						<td class="playarea row9 col8 bottomright"></td>
+						<td class="playarea row9 col9 bottomright"></td>
+					</tr>
+				</tbody></table> -->
+			</section>
+			<section id="controls">
+				<select onchange="loadGame()">
+					<option value="blank">Blank</option>
+				</select>
+				<input type="button" value="Lock" onclick="lock()" id="lock" />
+				<input type="button" value="Validate" onclick="validate()" />
+				<input type="button" value="Solve" onclick="solve()" />
+				<input type="button" value="Show Possible" onclick="showPossible()" />
+				<input type="button" value="Clear Possible" onclick="clearPossible()" />
+				<input type="button" value="dummy" onclick="dummy()" />
+				<input type="button" value="Show Solution" onclick="showSolution()" id="showSolution" //>
+			</section>
+			
+			<section id="solution">
+				<table>
+					<tr>
+						<td class="row1 col1 topleft"></td>
+						<td class="row1 col2 topleft"></td>
+						<td class="row1 col3 topleft"></td>
+						<td class="row1 col4 top"></td>
+						<td class="row1 col5 top"></td>
+						<td class="row1 col6 top"></td>
+						<td class="row1 col7 topright"></td>
+						<td class="row1 col8 topright"></td>
+						<td class="row1 col9 topright"></td>
+					</tr>
+					<tr>
+						<td class="row2 col1 topleft"></td>
+						<td class="row2 col2 topleft"></td>
+						<td class="row2 col3 topleft"></td>
+						<td class="row2 col4 top"></td>
+						<td class="row2 col5 top"></td>
+						<td class="row2 col6 top"></td>
+						<td class="row2 col7 topright"></td>
+						<td class="row2 col8 topright"></td>
+						<td class="row2 col9 topright"></td>
+					</tr>
+					<tr>
+						<td class="row3 col1 topleft"></td>
+						<td class="row3 col2 topleft"></td>
+						<td class="row3 col3 topleft"></td>
+						<td class="row3 col4 top"></td>
+						<td class="row3 col5 top"></td>
+						<td class="row3 col6 top"></td>
+						<td class="row3 col7 topright"></td>
+						<td class="row3 col8 topright"></td>
+						<td class="row3 col9 topright"></td>
+					</tr>
+					<tr>
+						<td class="row4 col1 left"></td>
+						<td class="row4 col2 left"></td>
+						<td class="row4 col3 left"></td>
+						<td class="row4 col4 centre"></td>
+						<td class="row4 col5 centre"></td>
+						<td class="row4 col6 centre"></td>
+						<td class="row4 col7 right"></td>
+						<td class="row4 col8 right"></td>
+						<td class="row4 col9 right"></td>
+					</tr>
+					<tr>
+						<td class="row5 col1 left"></td>
+						<td class="row5 col2 left"></td>
+						<td class="row5 col3 left"></td>
+						<td class="row5 col4 centre"></td>
+						<td class="row5 col5 centre"></td>
+						<td class="row5 col6 centre"></td>
+						<td class="row5 col7 right"></td>
+						<td class="row5 col8 right"></td>
+						<td class="row5 col9 right"></td>
+					</tr>
+					<tr>
+						<td class="row6 col1 left"></td>
+						<td class="row6 col2 left"></td>
+						<td class="row6 col3 left"></td>
+						<td class="row6 col4 centre"></td>
+						<td class="row6 col5 centre"></td>
+						<td class="row6 col6 centre"></td>
+						<td class="row6 col7 right"></td>
+						<td class="row6 col8 right"></td>
+						<td class="row6 col9 right"></td>
+					</tr>
+					<tr>
+						<td class="row7 col1 bottomleft"></td>
+						<td class="row7 col2 bottomleft"></td>
+						<td class="row7 col3 bottomleft"></td>
+						<td class="row7 col4 bottom"></td>
+						<td class="row7 col5 bottom"></td>
+						<td class="row7 col6 bottom"></td>
+						<td class="row7 col7 bottomright"></td>
+						<td class="row7 col8 bottomright"></td>
+						<td class="row7 col9 bottomright"></td>
+					</tr>
+					<tr>
+						<td class="row8 col1 bottomleft"></td>
+						<td class="row8 col2 bottomleft"></td>
+						<td class="row8 col3 bottomleft"></td>
+						<td class="row8 col4 bottom"></td>
+						<td class="row8 col5 bottom"></td>
+						<td class="row8 col6 bottom"></td>
+						<td class="row8 col7 bottomright"></td>
+						<td class="row8 col8 bottomright"></td>
+						<td class="row8 col9 bottomright"></td>
+					</tr>
+					<tr>
+						<td class="row9 col1 bottomleft"></td>
+						<td class="row9 col2 bottomleft"></td>
+						<td class="row9 col3 bottomleft"></td>
+						<td class="row9 col4 bottom"></td>
+						<td class="row9 col5 bottom"></td>
+						<td class="row9 col6 bottom"></td>
+						<td class="row9 col7 bottomright"></td>
+						<td class="row9 col8 bottomright"></td>
+						<td class="row9 col9 bottomright"></td>
+					</tr>
+				</table>
+			</section>
+		</div>
+
+		<footer>
+			Developed by Rahul
+		</footer>
+	</body>
+</html>
