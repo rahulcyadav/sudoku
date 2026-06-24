@@ -1,66 +1,47 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Sudoku</title>
     <style>
-      .container {
-        width: 90%;
-        margin: auto;
-      }
-
-      #controls {
-        float: right;
-        width: 30%;
-      }
-
-      #board {
-        float: left;
-      }
-
       header {
         background-color: black;
         color: white;
         text-align: center;
-        padding: 5px;
-        margin: auto;
       }
 
       section {
-        /* margin: auto; */
-        /* width:90%; */
-        padding: 20px;
+        margin: 8px;
       }
-
       footer {
         background-color: gray;
         color: white;
-        clear: both;
         text-align: center;
-        padding: 5px;
       }
 
       body {
-        font-family: Verdana, Geneva, sans-serif;
+        font-family: monospace;
       }
 
       td {
         border: 1px solid black;
-        height: 60px;
-        width: 60px;
+        height: 40px;
+        width: 40px;
         text-align: center;
-        font-size: 48px;
-        cursor: default;
-        padding: 8px;
+        font-size: 32px;
+        padding: 0px;
       }
 
       #solution td {
         border: 1px solid black;
-        height: 20px;
-        width: 20px;
+        height: 16px;
+        width: 16px;
         text-align: center;
         font-size: 12px;
         cursor: default;
-        padding: 4px;
+        padding: 2px;
       }
 
       .topleft,
@@ -68,65 +49,46 @@
       .centre,
       .bottomleft,
       .bottomright {
-        background-color: #f2f2f2;
+        background-color: #ccc;
       }
 
-      .possible td {
-        font-size: 14px;
-        height: 15px;
-        width: 15px;
-        border: none /* 1px solid black */;
+      .hint td {
+        font-size: 8px;
+        height: 12px;
+        width: 12px;
+        border: none;
         padding: 0px;
       }
 
-      .inputbutton:hover {
+      .input-button:hover {
         background-color: lightgray;
       }
 
       #selected {
         background-color: lightgray;
-        /* color: white; */
-        /* opacity: 0.7; */
       }
 
-      .solved {
+      .pass1 {
+        color: greenyellow;
+      }
+
+      .pass2 {
         color: green;
-      }
-
-      .solved1 {
-        color: red;
       }
 
       .userInput {
         color: blue;
       }
 
-      .marked {
+      .duplicate {
         background-color: lightpink;
-        /* opacity: 0.3; */
-      }
-
-      .highlight {
-        background-color: #ff4d4d;
       }
 
       .locked {
         font-weight: Bold;
       }
 
-      table {
-        /* margin: auto; */
-        /*border: 1px solid black;*/
-      }
-
-      div,
-      h2 {
-        margin: auto;
-      }
-
-      input[type="button"],
-      input[type="submit"] {
-        width: 100%;
+      button {
         background-color: #4caf50;
         color: white;
         padding: 14px 20px;
@@ -137,59 +99,24 @@
         font-size: 16px;
       }
 
-      input[type="button"]:hover,
-      input[type="submit"]:hover {
+      button:hover {
         background-color: #45a049;
       }
 
       select {
-        width: 100%;
-        padding: 12px 20px;
-        /* margin: auto; */
-        /* display: inline-block; */
-        border: 1px solid #ccc;
+        padding: 14px 20px;
+
         border-radius: 4px;
-        box-sizing: border-box;
       }
     </style>
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
-    <script>
-      //var gamecomplete = false;
-      //var gametype = 1;
-      //var countx = 0;
-      //var counto = 0;
-      var input = "";
-      var classes = [
-        ".row1",
-        ".row2",
-        ".row3",
-        ".row4",
-        ".row5",
-        ".row6",
-        ".row7",
-        ".row8",
-        ".row9",
-        ".col1",
-        ".col2",
-        ".col3",
-        ".col4",
-        ".col5",
-        ".col6",
-        ".col7",
-        ".col8",
-        ".col9",
-        ".topleft",
-        ".top",
-        ".topright",
-        ".left",
-        ".centre",
-        ".right",
-        ".bottomleft",
-        ".bottom",
-        ".bottomright",
-      ];
 
-      var classes2 = [
+    <script>
+      let isLocked = false;
+      let showSolution = false;
+      let selectedGameId = "none";
+      const BOARD_CELLS = "#board > tbody > tr > td";
+      const allGroups = [
         "row1",
         "row2",
         "row3",
@@ -219,21 +146,9 @@
         "bottomright",
       ];
 
-      var status1 = [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-      ];
-      var games = [
+      const games = [
         {
-          gameId: "1",
+          id: "game-1",
           difficulty: "easy",
           game: [
             [0, 0, 3, 9, 0, 0, 0, 5, 1],
@@ -259,7 +174,7 @@
           ],
         },
         {
-          gameId: "2",
+          id: "game-2",
           difficulty: "difficult",
           game: [
             [0, 0, 0, 0, 0, 1, 0, 6, 0],
@@ -285,7 +200,7 @@
           ],
         },
         {
-          gameId: "3",
+          id: "game-3",
           difficulty: "verydifficult",
           game: [
             [8, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -311,8 +226,8 @@
           ],
         },
         {
-          gameId: "John",
-          difficulty: "Doe",
+          id: "game-4",
+          difficulty: "verydifficult",
           game: [
             [0, 0, 3, 9, 0, 0, 0, 5, 1],
             [5, 4, 6, 0, 1, 8, 3, 0, 0],
@@ -325,680 +240,566 @@
             [8, 5, 0, 0, 0, 4, 6, 0, 0],
           ],
           solution: [
-            [0, 0, 3, 9, 0, 0, 0, 5, 1],
-            [5, 4, 6, 0, 1, 8, 3, 0, 0],
-            [0, 0, 0, 0, 0, 7, 4, 2, 0],
-            [0, 0, 9, 0, 5, 0, 0, 3, 0],
-            [2, 0, 0, 6, 0, 3, 0, 0, 4],
-            [0, 8, 0, 0, 7, 0, 2, 0, 0],
-            [0, 9, 7, 3, 0, 0, 0, 0, 0],
-            [0, 0, 1, 8, 2, 0, 9, 4, 7],
-            [8, 5, 0, 0, 0, 4, 6, 0, 0],
+            [7, 2, 3, 9, 4, 6, 8, 5, 1],
+            [5, 4, 6, 2, 1, 8, 3, 7, 9],
+            [9, 1, 8, 5, 3, 7, 4, 2, 6],
+            [1, 6, 9, 4, 5, 2, 7, 3, 8],
+            [2, 7, 5, 6, 8, 3, 1, 9, 4],
+            [3, 8, 4, 1, 7, 9, 2, 6, 5],
+            [4, 9, 7, 3, 6, 1, 5, 8, 2],
+            [6, 3, 1, 8, 2, 5, 9, 4, 7],
+            [8, 5, 2, 7, 9, 4, 6, 1, 3],
           ],
         },
       ];
 
-      $(document).ready(function () {
+      $(document).ready(function onDocumentReady() {
         if (games.length) {
-          $(games).each(function (index, value) {
-            var opt = $(
-              "<option>Game-" + index + " " + this.difficulty + "</option>",
-            ).attr("value", index);
-            $("select").append(opt);
+          $(games).each(function (index, game) {
+            let gameOption = $(
+              "<option>" + game.id + " " + game.difficulty + "</option>"
+            ).attr("value", game.id);
+            $("#control-select-load-game").append(gameOption);
           });
         }
 
-        $("#board td").click(function () {
-          if (!$(this).hasClass("locked")) {
+        $(BOARD_CELLS).click(function onClickCell(e) {
+          if (!$(e.currentTarget).hasClass("locked")) {
             $("#selected").removeAttr("id");
-            $(this).attr("id", "selected");
+            $(e.currentTarget).attr("id", "selected");
           }
         });
 
-        $(".inputbutton").click(function () {
-          input = $(this).html();
+        $(".input-button").click(function onClickNumberButton(e) {
+          const input = $(e.currentTarget).text();
           if (input === "clear") {
             $("#selected")
               .empty()
               .addClass("empty")
-              .removeClass("possible userInput");
+              .removeClass("hint userInput");
           } else {
             $("#selected")
-              .html(input)
+              .text(input)
               .addClass("userInput")
-              .removeClass("empty possible");
+              .removeClass("empty hint");
           }
         });
+
+        $("#control-button-toggle-lock").click(function onClickToggleLock() {
+          isLocked = !isLocked;
+          if (isLocked) {
+            onClickLock();
+          } else {
+            onClickUnlock();
+          }
+          $("#control-button-toggle-lock").text(isLocked ? "Unlock" : "Lock");
+        });
+
+        $("#control-button-validate").click(onClickValidate);
+        $("#control-button-solve").click(onClickSolve);
+        $("#control-button-show-hint").click(onClickShowHint);
+        $("#control-button-hide-hint").click(onClickHideHint);
+        $("#control-select-load-game").change(onChangeSelectedGame);
+        $("#control-button-toggle-show-solution").click(
+          function onClickToggleShowSolution() {
+            showSolution = !showSolution;
+            if (showSolution) {
+              onClickShowSolution();
+            } else {
+              onClickHideSolution();
+            }
+            $("#control-button-toggle-show-solution").text(
+              showSolution ? "Hide Solution" : "Show Solution"
+            );
+          }
+        );
       });
 
-      function lock() {
+      function onClickLock() {
         $("#selected").removeAttr("id");
-        $("#board td").each(function () {
-          if ($(this).html() !== "" && !$(this).hasClass("possible")) {
-            $(this).addClass("locked");
+        $(BOARD_CELLS).each(function (index, boardCellEl) {
+          if (
+            $(boardCellEl).text() !== "" &&
+            !$(boardCellEl).hasClass("hint")
+          ) {
+            $(boardCellEl).addClass("locked");
           }
         });
-        $("#lock").attr({ value: "Unlock", onclick: "unlock()" });
       }
 
-      function unlock() {
-        $(".locked").each(function () {
-          $(this).removeClass("locked");
+      function onClickUnlock() {
+        $(`${BOARD_CELLS}.locked`).each(function (index, lockedCellEl) {
+          $(lockedCellEl).removeClass("locked");
         });
-        $("#lock").attr({ value: "Lock", onclick: "lock()" });
       }
 
-      function validate() {
-        $(".marked").removeClass("marked");
-        $(classes2).each(function (index, value) {
-          //console.log(this);
-          $("#board ." + this).each(function () {
-            if ($(this).html() != "") {
-              if (status1[parseInt($(this).html(), 10)]) {
-                var current = $(this).html();
-                $("." + value).each(function () {
-                  //debugger
-                  if ($(this).html() === current) {
-                    $(this).addClass("marked");
-                  }
-                });
-              } else {
-                status1[parseInt($(this).html(), 10)] = true;
+      function onClickValidate() {
+        $("#selected").removeAttr("id");
+        $(".duplicate").removeClass("duplicate");
+        $(allGroups).each(function (index, group) {
+          const seenDigits = new Set();
+          const duplicateDigits = new Set();
+          $(`${BOARD_CELLS}.${group}`).each(function (index, groupCellElement) {
+            if (!$(groupCellElement).hasClass("hint")) {
+              const groupCellDigit = $(groupCellElement).text();
+              if (groupCellDigit) {
+                if (seenDigits.has(groupCellDigit)) {
+                  duplicateDigits.add(groupCellDigit);
+                } else {
+                  seenDigits.add(groupCellDigit);
+                }
               }
             }
           });
-          status1 = [
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-          ];
+          if (duplicateDigits.size) {
+            highlightDuplicates(group, duplicateDigits);
+          }
         });
       }
 
-      function solve() {
-        showPossible();
+      function highlightDuplicates(group, duplicateDigits) {
+        $(`${BOARD_CELLS}.${group}`).each(function (index, cellElement) {
+          if (duplicateDigits.has($(cellElement).text())) {
+            $(cellElement).addClass("duplicate");
+          }
+        });
+      }
 
-        //pass1
-        $(".possible").each(function () {
-          var current = this;
-          var count = 0;
-          var temp = 0;
+      function getGroupsForCell(cellEl) {
+        return allGroups.filter((group) => $(cellEl).hasClass(group));
+      }
 
-          $("td", this).each(function () {
-            if ($(this).html() !== "") {
-              count++;
-              temp = $(this).html();
+      function removeFinalizedCellDigitFromSuggestions(
+        finalizedCellEl,
+        finalizedDigit
+      ) {
+        getGroupsForCell(finalizedCellEl).forEach(function (group) {
+          $(`${BOARD_CELLS}.${group}`).each(function (index, groupCellEl) {
+            $("td", groupCellEl).each(function (index, suggestedDigitEl) {
+              if (
+                Number($(suggestedDigitEl).text()) === Number(finalizedDigit)
+              ) {
+                $(suggestedDigitEl).empty();
+              }
+            });
+          });
+        });
+      }
+      function finalizeCell(cellEl, digit, cssClass) {
+        $(cellEl).text(digit).addClass(cssClass).removeClass("empty hint");
+        removeFinalizedCellDigitFromSuggestions(cellEl, digit);
+      }
+
+      // solveNakedSingles
+      function pass1() {
+        $(`${BOARD_CELLS}.hint`).each(function (index, cellHintEl) {
+          let possibleDigitsCount = 0;
+          let lastPossibleDigit = 0;
+
+          $("td", cellHintEl).each(function (index, hintItemEl) {
+            const currentPossibleDigit = $(hintItemEl).text();
+            if (currentPossibleDigit !== "") {
+              possibleDigitsCount++;
+              lastPossibleDigit = currentPossibleDigit;
             }
           });
 
-          //finalize where only one possible
-          if (count === 1) {
-            $(this).html(temp).removeClass("empty possible").addClass("solved");
-            $(classes2).each(function () {
-              if ($(current).hasClass(this)) {
-                $("." + this).each(function () {
-                  $("td", this).each(function () {
-                    if ($(this).html() == temp) {
-                      $(this).empty();
-                    }
-                  });
-                });
-              }
-            });
+          //finalize cell which has only one possible digit
+          if (possibleDigitsCount === 1) {
+            finalizeCell(cellHintEl, lastPossibleDigit, "pass1");
           }
-          count = 0;
-          temp = 0;
         });
+      }
 
-        //pass2
-        //finalize when a number is possible only once in a class
-        $(classes2).each(function () {
-          var possibleCount = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-          $("." + this).each(function () {
-            $("td", this).each(function () {
-              //debugger
-              if ($(this).html() != "") {
-                possibleCount[parseInt($(this).html(), 10) - 1]++;
-              }
-            });
-          });
-          //console.log(value);
-          //debugger
-          $("." + this).each(function () {
-            //debugger
-            var current1 = this;
-            $("td", this).each(function () {
-              if ($(this).html() != "") {
-                if (possibleCount[parseInt($(this).html(), 10) - 1] === 1) {
-                  var temp1 = $(this).html();
-                  $(current1)
-                    .html(temp1)
-                    .addClass("solved1")
-                    .removeClass("empty possible");
-                  $(classes2).each(function () {
-                    if ($(current1).hasClass(this)) {
-                      $("." + this).each(function () {
-                        $("td", this).each(function () {
-                          if ($(this).html() === temp1) {
-                            $(this).empty();
-                          }
-                        });
-                      });
-                    }
-                  });
+      // solveHiddenSingles
+      function pass2() {
+        $(allGroups).each(function (index, group) {
+          const seenOnceDigits = new Map();
+          $(`${BOARD_CELLS}.hint.${group}`).each(function (index, groupHintEl) {
+            $("td", groupHintEl).each(function (index, hintItemEl) {
+              const currentPossibleDigit = $(hintItemEl).text();
+              if (currentPossibleDigit != "") {
+                if (seenOnceDigits.has(currentPossibleDigit)) {
+                  seenOnceDigits.set(currentPossibleDigit, null); // seen twice — not a hidden single
+                } else {
+                  seenOnceDigits.set(currentPossibleDigit, groupHintEl); // first occurrence
                 }
               }
             });
           });
+
+          // no second scan needed — just iterate the map
+          seenOnceDigits.forEach(function (seenOnceCellEl, seenOnceDigit) {
+            if (seenOnceCellEl !== null) {
+              // appears in exactly one cell
+              finalizeCell(seenOnceCellEl, seenOnceDigit, "pass2");
+            }
+          });
         });
       }
 
-      function showPossible() {
-        //mark empty cells
-        $("#board td").each(function () {
-          if ($(this).html() === "") {
-            $(this).addClass("empty");
+      function onClickSolve() {
+        onClickShowHint();
+
+        // finalize when only one number is possible in a cell
+        pass1();
+
+        //finalize when a number is possible only once in a group
+        pass2();
+      }
+
+      function markEmptyCellsWithClassEmpty() {
+        $(BOARD_CELLS).each(function (index, boardCellElement) {
+          if ($(boardCellElement).text() === "") {
+            $(boardCellElement).addClass("empty");
           }
         });
+      }
 
-        //mark possible numbers in empty cells
-        $(".empty").each(function () {
-          $(this).empty();
-          var current = this;
-          var count = 0;
-          var temp = 0;
-          var i = 0;
-
-          $(classes2).each(function (index, value) {
-            if ($(current).hasClass(this)) {
-              $("#board ." + this).each(function () {
-                if (!$(this).hasClass("empty")) {
-                  //console.log(this);
-                  status1[parseInt($(this).html(), 10)] = true;
-                }
-              });
+      function getSeenDigitsForCell(cellEl) {
+        const seenDigits = new Set();
+        getGroupsForCell(cellEl).forEach(function (group) {
+          $(`${BOARD_CELLS}.${group}`).each(function (index, groupCellEl) {
+            if (
+              !$(groupCellEl).hasClass("empty") &&
+              !$(groupCellEl).hasClass("hint")
+            ) {
+              seenDigits.add(Number($(groupCellEl).text()));
             }
           });
+        });
+        return seenDigits;
+      }
 
-          for (i = 1; i <= 9; i++) {
-            if (!status1[i]) {
-              count++;
-              temp = i;
-            }
-          }
+      function onClickShowHint() {
+        markEmptyCellsWithClassEmpty();
 
-          $(this)
+        //show possible numbers in empty cells
+        $(`${BOARD_CELLS}.empty`).each(function (index, emptyBoardCellEl) {
+          $(emptyBoardCellEl).empty();
+
+          const seenDigits = getSeenDigitsForCell(emptyBoardCellEl);
+
+          $(emptyBoardCellEl)
             .html(
-              "<table><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></table>",
+              "<table><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></table>"
             )
-            .addClass("possible");
+            .addClass("hint");
 
-          $("td", this).each(function (index) {
-            if (!status1[index + 1]) {
-              $(this).html(index + 1);
+          $("td", emptyBoardCellEl).each(function (index, hintItemEl) {
+            const digit = index + 1;
+            if (!seenDigits.has(digit)) {
+              $(hintItemEl).text(digit);
             }
           });
-          status1 = [
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-          ];
         });
       }
 
-      function showSolution() {
+      function onClickShowSolution() {
         $("#solution").show();
-        $("#showSolution").attr({
-          value: "Hide Solution",
-          onclick: "hideSolution()",
-        });
       }
 
-      function hideSolution() {
+      function onClickHideSolution() {
         $("#solution").hide();
-        $("#showSolution").attr({
-          value: "Show Solution",
-          onclick: "showSolution()",
-        });
       }
 
-      function clearPossible() {
-        $(".possible").empty().removeClass("possible");
+      function onClickHideHint() {
+        $(`${BOARD_CELLS}.hint`).empty().removeClass("hint");
       }
 
-      function loadGame() {
-        var loadClasses = [
-          ".row1",
-          ".row2",
-          ".row3",
-          ".row4",
-          ".row5",
-          ".row6",
-          ".row7",
-          ".row8",
-          ".row9",
-        ];
+      function onChangeSelectedGame(e) {
+        selectedGameId = e.target.value;
+        const selectedGame = games.find((game) => game.id === selectedGameId);
+        const rowGroups = allGroups.filter((g) => g.includes("row"));
 
         $("#solution").hide();
-        $("#board td").removeClass(
-          "marked empty possible locked solved solved1 userInput",
+        $(BOARD_CELLS).removeClass(
+          "duplicate empty hint locked pass1 pass2 userInput"
         );
         $("#selected").removeAttr("id");
 
-        $(loadClasses).each(function (index, value) {
-          var upperIndex = index;
-          $("#board " + value).each(function (index) {
-            var game;
-            var solution;
-            if ($("select").val() == "blank") {
-              game = 0;
-              solution = 0;
+        $(rowGroups).each(function (rowIndex, rowGroup) {
+          $(`${BOARD_CELLS}.${rowGroup}`).each(function (
+            rowGroupCellIndex,
+            rowGroupCellEl
+          ) {
+            let cellDigit;
+            let solutionCellDigit;
+            if (selectedGameId === "none") {
+              cellDigit = 0;
+              solutionCellDigit = 0;
             } else {
-              var game = games[$("select").val()]["game"][upperIndex][index];
-              var solution =
-                games[$("select").val()]["solution"][upperIndex][index];
+              cellDigit = selectedGame["game"][rowIndex][rowGroupCellIndex];
+              solutionCellDigit =
+                selectedGame["solution"][rowIndex][rowGroupCellIndex];
+            }
+            if (cellDigit === 0) {
+              $(rowGroupCellEl).empty();
+            } else {
+              $(rowGroupCellEl).text(cellDigit).addClass("locked");
             }
 
-            if (game == 0) {
-              $(this).empty();
+            if (solutionCellDigit === 0) {
+              $(
+                "#solution " + rowGroup + ":eq(" + rowGroupCellIndex + ")"
+              ).empty();
             } else {
-              $(this).html(game).addClass("locked");
-            }
-
-            if (solution == 0) {
-              $("#solution " + value + ":eq(" + index + ")").empty();
-            } else {
-              $("#solution " + value + ":eq(" + index + ")").html(solution);
+              $(
+                "#solution " + rowGroup + ":eq(" + rowGroupCellIndex + ")"
+              ).text(solutionCellDigit);
             }
           });
         });
       }
-
-      function dummy() {
-        //$("select").html("<option value='volvo'>Rahul</option>");
-        //console.log(games);
-      }
-
-      function random(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
     </script>
   </head>
-
   <body>
     <header>
       <h2>Sudoku</h2>
     </header>
-    <nav></nav>
-    <!-- <section id="gametype">
-			<input type="button" value="1 Player" onclick="oneplayer()" />
-			<input type="button" value="2 Player" onclick="twoplayer()" />
-		</section>
-		
-		<section id="info">
-			<p></p>
-		</section>
-		
-		<section id="turn">
-		</section>	 -->
 
-    <div class="container">
+    <main class="container">
       <section id="input">
         <table>
           <tr>
-            <td class="inputbutton">1</td>
-            <td class="inputbutton">2</td>
-            <td class="inputbutton">3</td>
-            <td class="inputbutton">4</td>
-            <td class="inputbutton">5</td>
-            <td class="inputbutton">6</td>
-            <td class="inputbutton">7</td>
-            <td class="inputbutton">8</td>
-            <td class="inputbutton">9</td>
-            <td class="inputbutton">clear</td>
+            <td class="input-button">1</td>
+            <td class="input-button">2</td>
+            <td class="input-button">3</td>
+            <td class="input-button">4</td>
+            <td class="input-button">5</td>
+            <td class="input-button">6</td>
+            <td class="input-button">7</td>
+            <td class="input-button">8</td>
+            <td class="input-button">9</td>
+            <td class="input-button">clear</td>
           </tr>
         </table>
       </section>
-      <section id="board">
-        <table>
-          <tr>
-            <td class="playarea row1 col1 topleft"></td>
-            <td class="playarea row1 col2 topleft"></td>
-            <td class="playarea row1 col3 topleft"></td>
-            <td class="playarea row1 col4 top"></td>
-            <td class="playarea row1 col5 top"></td>
-            <td class="playarea row1 col6 top"></td>
-            <td class="playarea row1 col7 topright"></td>
-            <td class="playarea row1 col8 topright"></td>
-            <td class="playarea row1 col9 topright"></td>
-          </tr>
-          <tr>
-            <td class="playarea row2 col1 topleft"></td>
-            <td class="playarea row2 col2 topleft"></td>
-            <td class="playarea row2 col3 topleft"></td>
-            <td class="playarea row2 col4 top"></td>
-            <td class="playarea row2 col5 top"></td>
-            <td class="playarea row2 col6 top"></td>
-            <td class="playarea row2 col7 topright"></td>
-            <td class="playarea row2 col8 topright"></td>
-            <td class="playarea row2 col9 topright"></td>
-          </tr>
-          <tr>
-            <td class="playarea row3 col1 topleft"></td>
-            <td class="playarea row3 col2 topleft"></td>
-            <td class="playarea row3 col3 topleft"></td>
-            <td class="playarea row3 col4 top"></td>
-            <td class="playarea row3 col5 top"></td>
-            <td class="playarea row3 col6 top"></td>
-            <td class="playarea row3 col7 topright"></td>
-            <td class="playarea row3 col8 topright"></td>
-            <td class="playarea row3 col9 topright"></td>
-          </tr>
-          <tr>
-            <td class="playarea row4 col1 left"></td>
-            <td class="playarea row4 col2 left"></td>
-            <td class="playarea row4 col3 left"></td>
-            <td class="playarea row4 col4 centre"></td>
-            <td class="playarea row4 col5 centre"></td>
-            <td class="playarea row4 col6 centre"></td>
-            <td class="playarea row4 col7 right"></td>
-            <td class="playarea row4 col8 right"></td>
-            <td class="playarea row4 col9 right"></td>
-          </tr>
-          <tr>
-            <td class="playarea row5 col1 left"></td>
-            <td class="playarea row5 col2 left"></td>
-            <td class="playarea row5 col3 left"></td>
-            <td class="playarea row5 col4 centre"></td>
-            <td class="playarea row5 col5 centre"></td>
-            <td class="playarea row5 col6 centre"></td>
-            <td class="playarea row5 col7 right"></td>
-            <td class="playarea row5 col8 right"></td>
-            <td class="playarea row5 col9 right"></td>
-          </tr>
-          <tr>
-            <td class="playarea row6 col1 left"></td>
-            <td class="playarea row6 col2 left"></td>
-            <td class="playarea row6 col3 left"></td>
-            <td class="playarea row6 col4 centre"></td>
-            <td class="playarea row6 col5 centre"></td>
-            <td class="playarea row6 col6 centre"></td>
-            <td class="playarea row6 col7 right"></td>
-            <td class="playarea row6 col8 right"></td>
-            <td class="playarea row6 col9 right"></td>
-          </tr>
-          <tr>
-            <td class="playarea row7 col1 bottomleft"></td>
-            <td class="playarea row7 col2 bottomleft"></td>
-            <td class="playarea row7 col3 bottomleft"></td>
-            <td class="playarea row7 col4 bottom"></td>
-            <td class="playarea row7 col5 bottom"></td>
-            <td class="playarea row7 col6 bottom"></td>
-            <td class="playarea row7 col7 bottomright"></td>
-            <td class="playarea row7 col8 bottomright"></td>
-            <td class="playarea row7 col9 bottomright"></td>
-          </tr>
-          <tr>
-            <td class="playarea row8 col1 bottomleft"></td>
-            <td class="playarea row8 col2 bottomleft"></td>
-            <td class="playarea row8 col3 bottomleft"></td>
-            <td class="playarea row8 col4 bottom"></td>
-            <td class="playarea row8 col5 bottom"></td>
-            <td class="playarea row8 col6 bottom"></td>
-            <td class="playarea row8 col7 bottomright"></td>
-            <td class="playarea row8 col8 bottomright"></td>
-            <td class="playarea row8 col9 bottomright"></td>
-          </tr>
-          <tr>
-            <td class="playarea row9 col1 bottomleft"></td>
-            <td class="playarea row9 col2 bottomleft"></td>
-            <td class="playarea row9 col3 bottomleft"></td>
-            <td class="playarea row9 col4 bottom"></td>
-            <td class="playarea row9 col5 bottom"></td>
-            <td class="playarea row9 col6 bottom"></td>
-            <td class="playarea row9 col7 bottomright"></td>
-            <td class="playarea row9 col8 bottomright"></td>
-            <td class="playarea row9 col9 bottomright"></td>
-          </tr>
+      <section>
+        <table id="board">
+          <tbody>
+            <tr>
+              <td class="row1 col1 topleft"></td>
+              <td class="row1 col2 topleft"></td>
+              <td class="row1 col3 topleft"></td>
+              <td class="row1 col4 top"></td>
+              <td class="row1 col5 top"></td>
+              <td class="row1 col6 top"></td>
+              <td class="row1 col7 topright"></td>
+              <td class="row1 col8 topright"></td>
+              <td class="row1 col9 topright"></td>
+            </tr>
+            <tr>
+              <td class="row2 col1 topleft"></td>
+              <td class="row2 col2 topleft"></td>
+              <td class="row2 col3 topleft"></td>
+              <td class="row2 col4 top"></td>
+              <td class="row2 col5 top"></td>
+              <td class="row2 col6 top"></td>
+              <td class="row2 col7 topright"></td>
+              <td class="row2 col8 topright"></td>
+              <td class="row2 col9 topright"></td>
+            </tr>
+            <tr>
+              <td class="row3 col1 topleft"></td>
+              <td class="row3 col2 topleft"></td>
+              <td class="row3 col3 topleft"></td>
+              <td class="row3 col4 top"></td>
+              <td class="row3 col5 top"></td>
+              <td class="row3 col6 top"></td>
+              <td class="row3 col7 topright"></td>
+              <td class="row3 col8 topright"></td>
+              <td class="row3 col9 topright"></td>
+            </tr>
+            <tr>
+              <td class="row4 col1 left"></td>
+              <td class="row4 col2 left"></td>
+              <td class="row4 col3 left"></td>
+              <td class="row4 col4 centre"></td>
+              <td class="row4 col5 centre"></td>
+              <td class="row4 col6 centre"></td>
+              <td class="row4 col7 right"></td>
+              <td class="row4 col8 right"></td>
+              <td class="row4 col9 right"></td>
+            </tr>
+            <tr>
+              <td class="row5 col1 left"></td>
+              <td class="row5 col2 left"></td>
+              <td class="row5 col3 left"></td>
+              <td class="row5 col4 centre"></td>
+              <td class="row5 col5 centre"></td>
+              <td class="row5 col6 centre"></td>
+              <td class="row5 col7 right"></td>
+              <td class="row5 col8 right"></td>
+              <td class="row5 col9 right"></td>
+            </tr>
+            <tr>
+              <td class="row6 col1 left"></td>
+              <td class="row6 col2 left"></td>
+              <td class="row6 col3 left"></td>
+              <td class="row6 col4 centre"></td>
+              <td class="row6 col5 centre"></td>
+              <td class="row6 col6 centre"></td>
+              <td class="row6 col7 right"></td>
+              <td class="row6 col8 right"></td>
+              <td class="row6 col9 right"></td>
+            </tr>
+            <tr>
+              <td class="row7 col1 bottomleft"></td>
+              <td class="row7 col2 bottomleft"></td>
+              <td class="row7 col3 bottomleft"></td>
+              <td class="row7 col4 bottom"></td>
+              <td class="row7 col5 bottom"></td>
+              <td class="row7 col6 bottom"></td>
+              <td class="row7 col7 bottomright"></td>
+              <td class="row7 col8 bottomright"></td>
+              <td class="row7 col9 bottomright"></td>
+            </tr>
+            <tr>
+              <td class="row8 col1 bottomleft"></td>
+              <td class="row8 col2 bottomleft"></td>
+              <td class="row8 col3 bottomleft"></td>
+              <td class="row8 col4 bottom"></td>
+              <td class="row8 col5 bottom"></td>
+              <td class="row8 col6 bottom"></td>
+              <td class="row8 col7 bottomright"></td>
+              <td class="row8 col8 bottomright"></td>
+              <td class="row8 col9 bottomright"></td>
+            </tr>
+            <tr>
+              <td class="row9 col1 bottomleft"></td>
+              <td class="row9 col2 bottomleft"></td>
+              <td class="row9 col3 bottomleft"></td>
+              <td class="row9 col4 bottom"></td>
+              <td class="row9 col5 bottom"></td>
+              <td class="row9 col6 bottom"></td>
+              <td class="row9 col7 bottomright"></td>
+              <td class="row9 col8 bottomright"></td>
+              <td class="row9 col9 bottomright"></td>
+            </tr>
+          </tbody>
         </table>
-        <!-- <table>
-					<tbody><tr>
-						<td class="playarea row1 col1 topleft" id=""></td>
-						<td class="playarea row1 col2 topleft"></td>
-						<td class="playarea row1 col3 topleft " id="">3</td>
-						<td class="playarea row1 col4 top " id="">9</td>
-						<td class="playarea row1 col5 top"></td>
-						<td class="playarea row1 col6 top"></td>
-						<td class="playarea row1 col7 topright" id=""></td>
-						<td class="playarea row1 col8 topright " id="">5</td>
-						<td class="playarea row1 col9 topright " id="">1</td>
-					</tr>
-					<tr>
-						<td class="playarea row2 col1 topleft " id="">5</td>
-						<td class="playarea row2 col2 topleft " id="">4</td>
-						<td class="playarea row2 col3 topleft " id="">6</td>
-						<td class="playarea row2 col4 top"></td>
-						<td class="playarea row2 col5 top " id="">1</td>
-						<td class="playarea row2 col6 top " id="">8</td>
-						<td class="playarea row2 col7 topright " id="">3</td>
-						<td class="playarea row2 col8 topright" id=""></td>
-						<td class="playarea row2 col9 topright" id="selected"></td>
-					</tr>
-					<tr>
-						<td class="playarea row3 col1 topleft"></td>
-						<td class="playarea row3 col2 topleft"></td>
-						<td class="playarea row3 col3 topleft"></td>
-						<td class="playarea row3 col4 top"></td>
-						<td class="playarea row3 col5 top"></td>
-						<td class="playarea row3 col6 top " id="">7</td>
-						<td class="playarea row3 col7 topright " id="">4</td>
-						<td class="playarea row3 col8 topright " id="">2</td>
-						<td class="playarea row3 col9 topright"></td>
-					</tr>
-					<tr>
-						<td class="playarea row4 col1 left"></td>
-						<td class="playarea row4 col2 left"></td>
-						<td class="playarea row4 col3 left " id="">9</td>
-						<td class="playarea row4 col4 centre"></td>
-						<td class="playarea row4 col5 centre " id="">5</td>
-						<td class="playarea row4 col6 centre"></td>
-						<td class="playarea row4 col7 right"></td>
-						<td class="playarea row4 col8 right " id="">3</td>
-						<td class="playarea row4 col9 right"></td>
-					</tr>
-					<tr>
-						<td class="playarea row5 col1 left " id="">2</td>
-						<td class="playarea row5 col2 left"></td>
-						<td class="playarea row5 col3 left"></td>
-						<td class="playarea row5 col4 centre " id="">6</td>
-						<td class="playarea row5 col5 centre"></td>
-						<td class="playarea row5 col6 centre " id="">3</td>
-						<td class="playarea row5 col7 right"></td>
-						<td class="playarea row5 col8 right"></td>
-						<td class="playarea row5 col9 right " id="">4</td>
-					</tr>
-					<tr>
-						<td class="playarea row6 col1 left"></td>
-						<td class="playarea row6 col2 left " id="">8</td>
-						<td class="playarea row6 col3 left"></td>
-						<td class="playarea row6 col4 centre"></td>
-						<td class="playarea row6 col5 centre " id="">7</td>
-						<td class="playarea row6 col6 centre"></td>
-						<td class="playarea row6 col7 right " id="">2</td>
-						<td class="playarea row6 col8 right"></td>
-						<td class="playarea row6 col9 right"></td>
-					</tr>
-					<tr>
-						<td class="playarea row7 col1 bottomleft"></td>
-						<td class="playarea row7 col2 bottomleft " id="">9</td>
-						<td class="playarea row7 col3 bottomleft " id="">7</td>
-						<td class="playarea row7 col4 bottom " id="">3</td>
-						<td class="playarea row7 col5 bottom"></td>
-						<td class="playarea row7 col6 bottom"></td>
-						<td class="playarea row7 col7 bottomright"></td>
-						<td class="playarea row7 col8 bottomright"></td>
-						<td class="playarea row7 col9 bottomright"></td>
-					</tr>
-					<tr>
-						<td class="playarea row8 col1 bottomleft"></td>
-						<td class="playarea row8 col2 bottomleft"></td>
-						<td class="playarea row8 col3 bottomleft " id="">1</td>
-						<td class="playarea row8 col4 bottom " id="">8</td>
-						<td class="playarea row8 col5 bottom " id="">2</td>
-						<td class="playarea row8 col6 bottom"></td>
-						<td class="playarea row8 col7 bottomright " id="">9</td>
-						<td class="playarea row8 col8 bottomright " id="">4</td>
-						<td class="playarea row8 col9 bottomright " id="">7</td>
-					</tr>
-					<tr>
-						<td class="playarea row9 col1 bottomleft " id="">8</td>
-						<td class="playarea row9 col2 bottomleft " id="">5</td>
-						<td class="playarea row9 col3 bottomleft"></td>
-						<td class="playarea row9 col4 bottom"></td>
-						<td class="playarea row9 col5 bottom"></td>
-						<td class="playarea row9 col6 bottom " id="">4</td>
-						<td class="playarea row9 col7 bottomright " id="">6</td>
-						<td class="playarea row9 col8 bottomright"></td>
-						<td class="playarea row9 col9 bottomright"></td>
-					</tr>
-				</tbody></table> -->
       </section>
       <section id="controls">
-        <select onchange="loadGame()">
-          <option value="blank">Blank</option>
+        <select id="control-select-load-game">
+          <option value="none">None</option>
         </select>
-        <input type="button" value="Lock" onclick="lock()" id="lock" />
-        <input type="button" value="Validate" onclick="validate()" />
-        <input type="button" value="Solve" onclick="solve()" />
-        <input type="button" value="Show Possible" onclick="showPossible()" />
-        <input type="button" value="Clear Possible" onclick="clearPossible()" />
-        <input type="button" value="dummy" onclick="dummy()" />
-        <input
-          type="button"
-          value="Show Solution"
-          onclick="showSolution()"
-          id="showSolution"
-        />
+        <button type="button" id="control-button-toggle-lock">Lock</button>
+        <button type="button" id="control-button-validate">Validate</button>
+        <button type="button" id="control-button-solve">Solve</button>
+        <button type="button" id="control-button-show-hint">Show Hint</button>
+        <button type="button" id="control-button-hide-hint">Hide Hint</button>
+        <button type="button" id="control-button-toggle-show-solution">
+          Show Solution
+        </button>
       </section>
 
-      <section id="solution">
-        <table>
-          <tr>
-            <td class="row1 col1 topleft"></td>
-            <td class="row1 col2 topleft"></td>
-            <td class="row1 col3 topleft"></td>
-            <td class="row1 col4 top"></td>
-            <td class="row1 col5 top"></td>
-            <td class="row1 col6 top"></td>
-            <td class="row1 col7 topright"></td>
-            <td class="row1 col8 topright"></td>
-            <td class="row1 col9 topright"></td>
-          </tr>
-          <tr>
-            <td class="row2 col1 topleft"></td>
-            <td class="row2 col2 topleft"></td>
-            <td class="row2 col3 topleft"></td>
-            <td class="row2 col4 top"></td>
-            <td class="row2 col5 top"></td>
-            <td class="row2 col6 top"></td>
-            <td class="row2 col7 topright"></td>
-            <td class="row2 col8 topright"></td>
-            <td class="row2 col9 topright"></td>
-          </tr>
-          <tr>
-            <td class="row3 col1 topleft"></td>
-            <td class="row3 col2 topleft"></td>
-            <td class="row3 col3 topleft"></td>
-            <td class="row3 col4 top"></td>
-            <td class="row3 col5 top"></td>
-            <td class="row3 col6 top"></td>
-            <td class="row3 col7 topright"></td>
-            <td class="row3 col8 topright"></td>
-            <td class="row3 col9 topright"></td>
-          </tr>
-          <tr>
-            <td class="row4 col1 left"></td>
-            <td class="row4 col2 left"></td>
-            <td class="row4 col3 left"></td>
-            <td class="row4 col4 centre"></td>
-            <td class="row4 col5 centre"></td>
-            <td class="row4 col6 centre"></td>
-            <td class="row4 col7 right"></td>
-            <td class="row4 col8 right"></td>
-            <td class="row4 col9 right"></td>
-          </tr>
-          <tr>
-            <td class="row5 col1 left"></td>
-            <td class="row5 col2 left"></td>
-            <td class="row5 col3 left"></td>
-            <td class="row5 col4 centre"></td>
-            <td class="row5 col5 centre"></td>
-            <td class="row5 col6 centre"></td>
-            <td class="row5 col7 right"></td>
-            <td class="row5 col8 right"></td>
-            <td class="row5 col9 right"></td>
-          </tr>
-          <tr>
-            <td class="row6 col1 left"></td>
-            <td class="row6 col2 left"></td>
-            <td class="row6 col3 left"></td>
-            <td class="row6 col4 centre"></td>
-            <td class="row6 col5 centre"></td>
-            <td class="row6 col6 centre"></td>
-            <td class="row6 col7 right"></td>
-            <td class="row6 col8 right"></td>
-            <td class="row6 col9 right"></td>
-          </tr>
-          <tr>
-            <td class="row7 col1 bottomleft"></td>
-            <td class="row7 col2 bottomleft"></td>
-            <td class="row7 col3 bottomleft"></td>
-            <td class="row7 col4 bottom"></td>
-            <td class="row7 col5 bottom"></td>
-            <td class="row7 col6 bottom"></td>
-            <td class="row7 col7 bottomright"></td>
-            <td class="row7 col8 bottomright"></td>
-            <td class="row7 col9 bottomright"></td>
-          </tr>
-          <tr>
-            <td class="row8 col1 bottomleft"></td>
-            <td class="row8 col2 bottomleft"></td>
-            <td class="row8 col3 bottomleft"></td>
-            <td class="row8 col4 bottom"></td>
-            <td class="row8 col5 bottom"></td>
-            <td class="row8 col6 bottom"></td>
-            <td class="row8 col7 bottomright"></td>
-            <td class="row8 col8 bottomright"></td>
-            <td class="row8 col9 bottomright"></td>
-          </tr>
-          <tr>
-            <td class="row9 col1 bottomleft"></td>
-            <td class="row9 col2 bottomleft"></td>
-            <td class="row9 col3 bottomleft"></td>
-            <td class="row9 col4 bottom"></td>
-            <td class="row9 col5 bottom"></td>
-            <td class="row9 col6 bottom"></td>
-            <td class="row9 col7 bottomright"></td>
-            <td class="row9 col8 bottomright"></td>
-            <td class="row9 col9 bottomright"></td>
-          </tr>
+      <section>
+        <table id="solution">
+          <tbody>
+            <tr>
+              <td class="row1 col1 topleft"></td>
+              <td class="row1 col2 topleft"></td>
+              <td class="row1 col3 topleft"></td>
+              <td class="row1 col4 top"></td>
+              <td class="row1 col5 top"></td>
+              <td class="row1 col6 top"></td>
+              <td class="row1 col7 topright"></td>
+              <td class="row1 col8 topright"></td>
+              <td class="row1 col9 topright"></td>
+            </tr>
+            <tr>
+              <td class="row2 col1 topleft"></td>
+              <td class="row2 col2 topleft"></td>
+              <td class="row2 col3 topleft"></td>
+              <td class="row2 col4 top"></td>
+              <td class="row2 col5 top"></td>
+              <td class="row2 col6 top"></td>
+              <td class="row2 col7 topright"></td>
+              <td class="row2 col8 topright"></td>
+              <td class="row2 col9 topright"></td>
+            </tr>
+            <tr>
+              <td class="row3 col1 topleft"></td>
+              <td class="row3 col2 topleft"></td>
+              <td class="row3 col3 topleft"></td>
+              <td class="row3 col4 top"></td>
+              <td class="row3 col5 top"></td>
+              <td class="row3 col6 top"></td>
+              <td class="row3 col7 topright"></td>
+              <td class="row3 col8 topright"></td>
+              <td class="row3 col9 topright"></td>
+            </tr>
+            <tr>
+              <td class="row4 col1 left"></td>
+              <td class="row4 col2 left"></td>
+              <td class="row4 col3 left"></td>
+              <td class="row4 col4 centre"></td>
+              <td class="row4 col5 centre"></td>
+              <td class="row4 col6 centre"></td>
+              <td class="row4 col7 right"></td>
+              <td class="row4 col8 right"></td>
+              <td class="row4 col9 right"></td>
+            </tr>
+            <tr>
+              <td class="row5 col1 left"></td>
+              <td class="row5 col2 left"></td>
+              <td class="row5 col3 left"></td>
+              <td class="row5 col4 centre"></td>
+              <td class="row5 col5 centre"></td>
+              <td class="row5 col6 centre"></td>
+              <td class="row5 col7 right"></td>
+              <td class="row5 col8 right"></td>
+              <td class="row5 col9 right"></td>
+            </tr>
+            <tr>
+              <td class="row6 col1 left"></td>
+              <td class="row6 col2 left"></td>
+              <td class="row6 col3 left"></td>
+              <td class="row6 col4 centre"></td>
+              <td class="row6 col5 centre"></td>
+              <td class="row6 col6 centre"></td>
+              <td class="row6 col7 right"></td>
+              <td class="row6 col8 right"></td>
+              <td class="row6 col9 right"></td>
+            </tr>
+            <tr>
+              <td class="row7 col1 bottomleft"></td>
+              <td class="row7 col2 bottomleft"></td>
+              <td class="row7 col3 bottomleft"></td>
+              <td class="row7 col4 bottom"></td>
+              <td class="row7 col5 bottom"></td>
+              <td class="row7 col6 bottom"></td>
+              <td class="row7 col7 bottomright"></td>
+              <td class="row7 col8 bottomright"></td>
+              <td class="row7 col9 bottomright"></td>
+            </tr>
+            <tr>
+              <td class="row8 col1 bottomleft"></td>
+              <td class="row8 col2 bottomleft"></td>
+              <td class="row8 col3 bottomleft"></td>
+              <td class="row8 col4 bottom"></td>
+              <td class="row8 col5 bottom"></td>
+              <td class="row8 col6 bottom"></td>
+              <td class="row8 col7 bottomright"></td>
+              <td class="row8 col8 bottomright"></td>
+              <td class="row8 col9 bottomright"></td>
+            </tr>
+            <tr>
+              <td class="row9 col1 bottomleft"></td>
+              <td class="row9 col2 bottomleft"></td>
+              <td class="row9 col3 bottomleft"></td>
+              <td class="row9 col4 bottom"></td>
+              <td class="row9 col5 bottom"></td>
+              <td class="row9 col6 bottom"></td>
+              <td class="row9 col7 bottomright"></td>
+              <td class="row9 col8 bottomright"></td>
+              <td class="row9 col9 bottomright"></td>
+            </tr>
+          </tbody>
         </table>
       </section>
-    </div>
+    </main>
 
     <footer>Developed by Rahul</footer>
   </body>
