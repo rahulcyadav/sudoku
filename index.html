@@ -540,13 +540,11 @@
             }
 
             if (solutionCellDigit === 0) {
-              $(
-                "#solution " + rowGroup + ":eq(" + rowGroupCellIndex + ")"
-              ).empty();
+              $(`#solution .${rowGroup}:eq(${rowGroupCellIndex})`).empty();
             } else {
-              $(
-                "#solution " + rowGroup + ":eq(" + rowGroupCellIndex + ")"
-              ).text(solutionCellDigit);
+              $(`#solution .${rowGroup}:eq(${rowGroupCellIndex})`).text(
+                solutionCellDigit
+              );
             }
           });
         });
