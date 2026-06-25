@@ -111,9 +111,10 @@
     </style>
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
 
-    <script>
+    <script type="module">
       let isLocked = false;
-      let showSolution = false;
+      let isVisibleSolution = false;
+      let isVisibleHint = false;
       let selectedGameId = "none";
       const BOARD_CELLS = "#board > tbody > tr > td";
       const allGroups = [
@@ -252,17 +253,24 @@
           ],
         },
       ];
+      init();
+      function init() {
+        populateGameOptions(games);
+        addEventListeners();
+      }
 
-      $(document).ready(function onDocumentReady() {
+      function populateGameOptions(games) {
         if (games.length) {
-          $(games).each(function (index, game) {
+          games.forEach((game) => {
             let gameOption = $(
               "<option>" + game.id + " " + game.difficulty + "</option>"
             ).attr("value", game.id);
             $("#control-select-load-game").append(gameOption);
           });
         }
+      }
 
+      function addEventListeners() {
         $(BOARD_CELLS).click(function onClickCell(e) {
           if (!$(e.currentTarget).hasClass("locked")) {
             $("#selected").removeAttr("id");
@@ -297,23 +305,36 @@
 
         $("#control-button-validate").click(onClickValidate);
         $("#control-button-solve").click(onClickSolve);
-        $("#control-button-show-hint").click(onClickShowHint);
-        $("#control-button-hide-hint").click(onClickHideHint);
-        $("#control-select-load-game").change(onChangeSelectedGame);
-        $("#control-button-toggle-show-solution").click(
-          function onClickToggleShowSolution() {
-            showSolution = !showSolution;
-            if (showSolution) {
-              onClickShowSolution();
+
+        $("#control-button-toggle-show-hint").click(
+          function onClickToggleShowHint() {
+            isVisibleHint = !isVisibleHint;
+            if (isVisibleHint) {
+              onClickShowHint();
             } else {
-              onClickHideSolution();
+              onClickHideHint();
             }
-            $("#control-button-toggle-show-solution").text(
-              showSolution ? "Hide Solution" : "Show Solution"
+            $("#control-button-toggle-show-hint").text(
+              isVisibleHint ? "Hide hint" : "Show hint"
             );
           }
         );
-      });
+
+        $("#control-select-load-game").change(onChangeSelectedGame);
+        $("#control-button-toggle-show-solution").click(
+          function onClickToggleShowSolution() {
+            isVisibleSolution = !isVisibleSolution;
+            if (isVisibleSolution) {
+              $("#solution").show();
+            } else {
+              $("#solution").hide();
+            }
+            $("#control-button-toggle-show-solution").text(
+              isVisibleSolution ? "Hide Solution" : "Show Solution"
+            );
+          }
+        );
+      }
 
       function onClickLock() {
         $("#selected").removeAttr("id");
@@ -336,7 +357,7 @@
       function onClickValidate() {
         $("#selected").removeAttr("id");
         $(".duplicate").removeClass("duplicate");
-        $(allGroups).each(function (index, group) {
+        allGroups.forEach((group) => {
           const seenDigits = new Set();
           const duplicateDigits = new Set();
           $(`${BOARD_CELLS}.${group}`).each(function (index, groupCellElement) {
@@ -493,14 +514,6 @@
             }
           });
         });
-      }
-
-      function onClickShowSolution() {
-        $("#solution").show();
-      }
-
-      function onClickHideSolution() {
-        $("#solution").hide();
       }
 
       function onClickHideHint() {
@@ -685,8 +698,9 @@
         <button type="button" id="control-button-toggle-lock">Lock</button>
         <button type="button" id="control-button-validate">Validate</button>
         <button type="button" id="control-button-solve">Solve</button>
-        <button type="button" id="control-button-show-hint">Show Hint</button>
-        <button type="button" id="control-button-hide-hint">Hide Hint</button>
+        <button type="button" id="control-button-toggle-show-hint">
+          Show Hint
+        </button>
         <button type="button" id="control-button-toggle-show-solution">
           Show Solution
         </button>
